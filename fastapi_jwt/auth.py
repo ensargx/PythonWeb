@@ -1,24 +1,38 @@
 from jose import jwt
-from fastapi import Request, HTTPException, Header
+from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, Form
+from datetime import datetime, timedelta
+from fastapi import HTTPException, status
+
+router = APIRouter()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 JWT_SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-    
-
-async def login_required(Authorization: str = Header()):
-    try:
-        bearer, auth_token = Authorization[:6], Authorization[7:]
-        if bearer != "Bearer":
-            raise HTTPException(status_code=401, detail="Not authenticated, Invalid Header")
-
-        token = jwt.decode(auth_token, JWT_SECRET_KEY, algorithms=["HS256"])
-    except jwt.JWTError:
-        raise HTTPException(status_code=401, detail="Not authenticated, Invalid token")
-    except:
-        raise HTTPException(status_code=401, detail="Not authenticated, Invalid Authorization header")
-    
-    return token
-
 
 def createToken(data: dict):
-    token = jwt.encode(data, JWT_SECRET_KEY, algorithm="HS256")
-    return token
+    return jwt.encode(data, JWT_SECRET_KEY, algorithm="HS256")
+
+@router.post("/register")
+def register(data: dict):
+    data["exp"] = datetime.utcnow() + timedelta(minutes=30)
+    return createToken(data)
+
+@router.post("/login")
+def login(username: str = Form(...), password: str = Form(...)):
+    """
+    only for admin
+    """
+    if username == "admin" and password == "admin":
+        data = {
+            "username": username,
+            "password": password,
+            "exp": datetime.utcnow() + timedelta(minutes=30)
+        }
+        return createToken(data)
+    
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid username or password",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
