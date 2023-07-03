@@ -29,7 +29,8 @@ def login(username: str = Form(...), password: str = Form(...)):
             "password": password,
             "exp": datetime.utcnow() + timedelta(minutes=30)
         }
-        return createToken(data)
+        json_data = {"token": createToken(data)}
+        return json_data
     
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

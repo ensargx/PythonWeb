@@ -5,6 +5,7 @@ from auth import router, oauth2_scheme
 
 app = FastAPI()
 
+# /auth router
 app.include_router(router, prefix="/auth")
 
 @app.get("/")
