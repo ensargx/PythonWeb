@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from fastapi import HTTPException, status
 from pydantic import BaseModel
 
-router = APIRouter()
+auth_router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", )
 
@@ -19,7 +19,7 @@ class User(BaseModel):
 def createToken(data: dict):
     return jwt.encode(data, JWT_SECRET_KEY, algorithm="HS256")
 
-@router.post("/register", response_model=str)
+@auth_router.post("/register", response_model=str)
 def register(user: User):
 
     data = {"username": user["username"]}
@@ -27,7 +27,7 @@ def register(user: User):
 
     return createToken(data)
 
-@router.post("/login")
+@auth_router.post("/login")
 def login(user: User):
     """
     only for admin

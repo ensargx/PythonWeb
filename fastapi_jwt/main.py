@@ -1,12 +1,16 @@
 from fastapi import FastAPI, Depends, Body
 from datetime import datetime, timedelta
 from typing import Annotated
-from auth import router, oauth2_scheme, convert_jwt
+from auth import auth_router, oauth2_scheme, convert_jwt
+from todo import todo_router
 
 app = FastAPI()
 
 # /auth router
-app.include_router(router, prefix="/auth")
+app.include_router(auth_router, prefix="/auth")
+
+# /user router
+app.include_router(todo_router, prefix="/todo")
 
 @app.get("/")
 async def root():
