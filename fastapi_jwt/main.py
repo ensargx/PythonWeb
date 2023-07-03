@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, Body
 from datetime import datetime, timedelta
 from typing import Annotated
-from auth import router, oauth2_scheme
+from auth import router, oauth2_scheme, convert_jwt
 
 app = FastAPI()
 
@@ -14,7 +14,9 @@ async def root():
 
 
 @app.post("/protected")
-async def protected(data: dict = Body(), token: str = Depends(oauth2_scheme)):
-    print(data)
-    print(token)
-    return {"message": "Authorized"}
+async def protected(data: dict = Body(), data_user: dict = Depends(convert_jwt)):
+    
+    return {"data": data, "data_user": data_user}
+    
+    json_data = {"data": data, "token": token, "message": f"Welcome to the protected route, {username}"}
+    return json_data
