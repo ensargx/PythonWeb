@@ -49,21 +49,29 @@ async def shutdown():
 async def get_todo_by_id(todo_id):
     pass
 
-@todo_router.get("s", response_model=list[Todo])
+@todo_router.get("s/", response_model=list[Todo])
 async def get_todos():
     query = todos.select()
     return await database.fetch_all(query)
 
 @todo_router.post("/", response_model=Todo)
 async def create_todo(todo: TodoIn) -> Todo:
-    query = todos.insert().values(text=todo.title, description=todo.description)
+    query = todos.insert().values(title=todo.title, description=todo.description)
     last_record_id = await database.execute(query)
     return {**todo.dict(), "id": last_record_id}
 
 @todo_router.put("/{todo_id}", response_model=Todo)
-async def update_todo_by_id(todo_id, todo: TodoIn):
-    pass
+async def update_todo_by_id(todo_id:int, todo: TodoIn):
+    query = todos.update().where(todos.c.id == todo_id).values(title=todo.title, description=todo.description)
+    success = await database.execute(query)
+    if not success:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return {**todo.dict(), "id": todo_id}
 
 @todo_router.delete("/{todo_id}")
 async def delete_todo_by_id(todo_id):
-    pass
+    query = todos.delete().where(todos.c.id == todo_id)
+    success = await database.execute(query)
+    if not success:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return {"message": "Todo with id: {} deleted successfully!".format(todo_id)}
