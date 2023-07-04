@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FastAPI</title>
 </head>
@@ -9,23 +10,17 @@
     <div class="todos">
         <div class="title"><h1>Todos</h1></div>
         <div class="add_todo">
-            <form action="http://localhost:8000/todo/" method="POST">
+            <form id="todo_form">
                 <input type="text" name="title" placeholder="Title">
                 <input type="text" name="description" placeholder="Description">
                 <input type="submit" value="Add">
             </form>
         </div>
-        <div class="list_todo">
-            <ul>
-                <li>
-                    <div class="todo">
-                        <div class="title">Title</div>
-                        <div class="description">Description</div>
-                        <div class="delete">Delete</div>
-                    </div>
-                </li>
+        <div class="todo_list">
+            <ul id="todo_list">
             </ul>
         </div>
     </div>
 </body>
+<script src="call_api.js"></script>
 </html>
