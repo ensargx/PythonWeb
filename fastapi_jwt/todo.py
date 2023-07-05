@@ -56,6 +56,9 @@ async def get_todos():
 
 @todo_router.post("/", response_model=Todo)
 async def create_todo(todo: TodoIn) -> Todo:
+    # title or description cannot be empty
+    if not todo.title or not todo.description:
+        raise HTTPException(status_code=400, detail="Title or description cannot be empty")
     query = todos.insert().values(title=todo.title, description=todo.description)
     last_record_id = await database.execute(query)
     return {**todo.dict(), "id": last_record_id}

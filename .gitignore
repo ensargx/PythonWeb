@@ -2,3 +2,4 @@
 *.pyc
 */venv/
 .vscode/
+fastapi_jwt/frontend/node_modules/
