@@ -23,11 +23,12 @@ const renderTodos = () => __awaiter(void 0, void 0, void 0, function* () {
     todosDiv.innerHTML = "";
     todos.forEach((todo) => {
         const todoDiv = document.createElement("div");
+        todoDiv.id = `todo_${todo.id}`;
         todoDiv.className = "todo";
         todoDiv.innerHTML = `
             <h3>${todo.title}</h3>
             <p>${todo.description}</p>
-            <button class="delete" onclick="deleteTodo(${todo.id})">Delete</button>
+            <button class="delete" onclick="deleteTodo(${todo.id}); return false;">Delete</button>
         `;
         todosDiv.appendChild(todoDiv);
     });
@@ -40,6 +41,15 @@ const deleteTodo = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
     const data = yield response.json();
     console.log(data);
+    if (data.status !== "success") {
+        alert("Failed to delete todo.\nDetail: " + data.detail);
+        return;
+    }
+    // delete todo with id from page
+    const todoList = document.getElementById("todo_list");
+    // select todo_id div from todo_list
+    const todo = todoList.querySelector(`#todo_${id}`);
+    todo.remove();
     return data;
 });
 // create function to add new todo to backend
@@ -48,6 +58,10 @@ const addTodo = () => __awaiter(void 0, void 0, void 0, function* () {
     const form = document.getElementById("todo_form");
     const title = form.todo_title.value;
     const description = form.todo_description.value;
+    // clear input fields
+    form.todo_title.value = "";
+    form.todo_description.value = "";
+    // send title and description to backend
     const response = yield fetch("http://localhost:8000/todo/", {
         method: "POST",
         headers: {
@@ -55,10 +69,29 @@ const addTodo = () => __awaiter(void 0, void 0, void 0, function* () {
         },
         body: JSON.stringify({ title, description }),
     });
-    console.log(JSON.stringify({ title, description }));
     const data = yield response.json();
+    // if response_status_code is 400, alert user that todo was not added
+    if (response.status === 400) {
+        alert("Failed to add todo.\nDetail: " + data.detail);
+        console.log(data);
+        return;
+    }
     console.log(data);
-    return data;
+    // get todo deails from response
+    const todo = data;
+    // add todo to page
+    const todosDiv = document.getElementById("todo_list");
+    if (!todosDiv)
+        return;
+    const todoDiv = document.createElement("div");
+    todoDiv.id = `todo_${todo.id}`;
+    todoDiv.className = "todo";
+    todoDiv.innerHTML = `
+        <h3>${todo.title}</h3>
+        <p>${todo.description}</p>
+        <button class="delete" onclick="deleteTodo(${todo.id}); return false;">Delete</button>
+    `;
+    todosDiv.appendChild(todoDiv);
 });
 window.onload = () => {
     console.log("loaded");

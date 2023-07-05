@@ -21,11 +21,12 @@ const renderTodos = async () => {
     todosDiv.innerHTML = "";
     todos.forEach((todo: Todo) => {
         const todoDiv = document.createElement("div");
+        todoDiv.id = `todo_${todo.id}`;
         todoDiv.className = "todo";
         todoDiv.innerHTML = `
             <h3>${todo.title}</h3>
             <p>${todo.description}</p>
-            <button class="delete" onclick="deleteTodo(${todo.id})">Delete</button>
+            <button class="delete" onclick="deleteTodo(${todo.id}); return false;">Delete</button>
         `;
         todosDiv.appendChild(todoDiv);
     }
@@ -40,6 +41,15 @@ const deleteTodo = async (id: number) => {
     });
     const data = await response.json();
     console.log(data);
+    if(data.status !== "success") {
+        alert("Failed to delete todo.\nDetail: " + data.detail);
+        return;
+    }
+    // delete todo with id from page
+    const todoList = document.getElementById("todo_list") as HTMLDivElement;
+    // select todo_id div from todo_list
+    const todo = todoList.querySelector(`#todo_${id}`) as HTMLDivElement;
+    todo.remove();
     return data;
 }
 
@@ -50,6 +60,11 @@ const addTodo = async () => {
     const title = form.todo_title.value;
     const description = form.todo_description.value;
 
+    // clear input fields
+    form.todo_title.value = "";
+    form.todo_description.value = "";
+
+    // send title and description to backend
     const response = await fetch("http://localhost:8000/todo/", {
         method: "POST",
         headers: {
@@ -57,10 +72,32 @@ const addTodo = async () => {
         },
         body: JSON.stringify({ title, description }),
     });
-    console.log(JSON.stringify({ title, description }));
     const data = await response.json();
+
+    // if response_status_code is 400, alert user that todo was not added
+    if(response.status === 400) {
+        alert("Failed to add todo.\nDetail: " + data.detail);
+        console.log(data);
+        return;
+    }
     console.log(data);
-    return data; 
+
+    // get todo deails from response
+    const todo = data as Todo;
+
+    // add todo to page
+    const todosDiv = document.getElementById("todo_list");
+    if (!todosDiv) return;
+    const todoDiv = document.createElement("div");
+    todoDiv.id = `todo_${todo.id}`;
+    todoDiv.className = "todo";
+    todoDiv.innerHTML = `
+        <h3>${todo.title}</h3>
+        <p>${todo.description}</p>
+        <button class="delete" onclick="deleteTodo(${todo.id}); return false;">Delete</button>
+    `;
+    todosDiv.appendChild(todoDiv);
+
 };
 
 window.onload = () => {

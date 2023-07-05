@@ -76,5 +76,5 @@ async def delete_todo_by_id(todo_id):
     query = todos.delete().where(todos.c.id == todo_id)
     success = await database.execute(query)
     if not success:
-        raise HTTPException(status_code=404, detail="Todo not found")
-    return {"message": "Todo with id: {} deleted successfully!".format(todo_id)}
+        raise HTTPException(status_code=404, detail="Todo with id {} not found".format(todo_id))
+    return {"status": "success", "message": "Todo with id: {} deleted successfully!".format(todo_id)}
