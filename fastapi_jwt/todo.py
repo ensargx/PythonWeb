@@ -1,29 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-import databases
-import sqlalchemy
-
-# SQLAlchemy specific code, as with any other app
-DATABASE_URL = "sqlite:///./sqlite.db"
-# DATABASE_URL = "postgresql://user:password@postgresserver/db"
-
-database = databases.Database(DATABASE_URL)
-metadata = sqlalchemy.MetaData()
-
-todos = sqlalchemy.Table(
-    "todos",
-    metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("title", sqlalchemy.String),
-    sqlalchemy.Column("description", sqlalchemy.String),
-    sqlalchemy.Column("completed", sqlalchemy.Boolean, default=False),
-    sqlalchemy.Column("owner_id", sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
-)
-
-engine = sqlalchemy.create_engine(
-    DATABASE_URL, connect_args={"check_same_thread": False}
-)
-metadata.create_all(engine)
+from db import database, todos
 
 todo_router = APIRouter()
 
