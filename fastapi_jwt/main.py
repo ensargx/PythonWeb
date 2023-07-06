@@ -1,7 +1,5 @@
 from fastapi import FastAPI, Depends, Body
-from datetime import datetime, timedelta
-from typing import Annotated
-from auth import auth_router, oauth2_scheme, convert_jwt
+from user import user_router, oauth2_scheme
 from todo import todo_router
 
 app = FastAPI()
@@ -14,23 +12,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-
-# /auth router
-app.include_router(auth_router, prefix="/auth")
-
 # /user router
-app.include_router(todo_router, prefix="/todo")
+app.include_router(user_router, prefix="/user")
+
+# /todo router, it is protected by oauth2_scheme, requires logged in user
+app.include_router(todo_router, prefix="/todo", dependencies=[Depends(oauth2_scheme)])
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
-
-
-@app.post("/protected")
-async def protected(data: dict = Body(), data_user: dict = Depends(convert_jwt)):
-    
-    return {"data": data, "data_user": data_user}
-    
-    json_data = {"data": data, "token": token, "message": f"Welcome to the protected route, {username}"}
-    return json_data
