@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <script src="script/main.js" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/main.css">
     <title>FastAPI</title>
 </head>
 <body>
@@ -21,6 +22,17 @@
             <ul id="todo_list">
             </ul>
         </div>
+    </div>
+    <div id="user_not_logged_in">
+        <button id="login" onclick="document.location='login.html'">Login</button>
+        <button id="register" onclick="document.location='register.html'">Register</button>
+    </div>
+    <div id="user_logged_in">
+        <div id="wellcome">
+            <p id="hello">Hello, </p>
+            <p id="name"></p>
+        </div>
+        <button id="logout" onclick="logout(); return;">Logout</button>
     </div>
 </body>
 </html>

@@ -10,7 +10,7 @@ const login = async () => {
     const username = document.getElementById('username') as HTMLInputElement;
     const password = document.getElementById('password') as HTMLInputElement;
 
-    const response = await fetch('http://localhost:8000/user/login', {
+    const response = await fetch(`${API_URI}/user/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

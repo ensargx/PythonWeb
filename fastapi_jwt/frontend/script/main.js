@@ -8,13 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+const API_URI = "http://127.0.0.1:8000";
+const getToken = () => {
+    // get token from local storage
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        return;
+    }
+    return token;
+};
 // create function to fetch todos from backend and return as json
 const getTodos = () => __awaiter(void 0, void 0, void 0, function* () {
     // if token is not present, alert user that they are not logged in
     if (!check_token()) {
         return;
     }
-    const response = yield fetch("http://localhost:8000/todo/", {
+    const response = yield fetch(`${API_URI}/todo/`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -50,7 +59,7 @@ const renderTodos = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 // create function to delete todo by its id make the button work
 const deleteTodo = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield fetch(`http://localhost:8000/todo/${id}`, {
+    const response = yield fetch(`${API_URI}/todo/${id}`, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -79,7 +88,7 @@ const addTodo = () => __awaiter(void 0, void 0, void 0, function* () {
     form.todo_title.value = "";
     form.todo_description.value = "";
     // send title and description to backend
-    const response = yield fetch("http://localhost:8000/todo/", {
+    const response = yield fetch(`${API_URI}/todo/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -131,7 +140,7 @@ const completeTodo = (id) => __awaiter(void 0, void 0, void 0, function* () {
     checkbox.disabled = false;
 });
 const updateTodo = (id, values) => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield fetch(`http://localhost:8000/todo/${id}`, {
+    const response = yield fetch(`${API_URI}/todo/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -179,6 +188,7 @@ const logout = () => __awaiter(void 0, void 0, void 0, function* () {
     // delete token from local storage
     localStorage.removeItem("access_token");
     localStorage.removeItem("token_type");
+    location.reload();
     // delete logout button
     const logoutButton = document.getElementById("logout_button");
     if (!logoutButton)
@@ -190,6 +200,8 @@ const logout = () => __awaiter(void 0, void 0, void 0, function* () {
     if (!todosDiv)
         return;
     todosDiv.innerHTML = "";
+    // refresh page
+    location.reload();
 });
 const create_logout_button = () => {
     // if exists, delete login form
@@ -203,17 +215,43 @@ const create_logout_button = () => {
     logoutButton.onclick = logout;
     document.body.appendChild(logoutButton);
 };
-window.onload = () => {
+// create get_me function to get user details from backend and returns User
+const get_me = () => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield fetch(`${API_URI}/user/me`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+    });
+    const data = yield response.json();
+    return data;
+});
+window.onload = () => __awaiter(void 0, void 0, void 0, function* () {
     console.log("loaded");
     renderTodos();
     // check if token exists
     const token = localStorage.getItem("access_token");
     if (!token) {
         console.log("no token");
-        create_login_form();
+        const user_logged_in = document.getElementById("user_logged_in");
+        user_logged_in.hidden = true;
     }
     else {
         console.log("token exists");
-        create_logout_button();
+        const user_not_logged_in = document.getElementById("user_not_logged_in");
+        if (!user_not_logged_in)
+            return;
+        user_not_logged_in.hidden = true;
+        // get user details from backend with get_me(), it is type of User and display its name
+        const user = yield get_me();
+        if (!user)
+            return;
+        // get hello p from user_logged_in div and change its text
+        const user_logged_in = document.getElementById("user_logged_in");
+        if (!user_logged_in)
+            return;
+        const hello_p = user_logged_in.querySelector("p");
+        hello_p.innerHTML = `Hello, ${user.name}`;
     }
-};
+});

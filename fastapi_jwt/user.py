@@ -15,6 +15,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class TokenData(BaseModel):
     id: int
     username: str
+    name: str
 
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Request
@@ -106,7 +107,7 @@ async def login(user: UserLogin):
     if not verify_password(user.password, user_data["hashed_password"]):
         raise HTTPException(status_code=400, detail="Incorrect password")
     
-    token_data: TokenData = {"username": user.username, "id": user_data["id"]}
+    token_data: TokenData = {"username": user.username, "id": user_data["id"], "name": user_data["name"]}
     access_token = createToken(token_data)
     
     return {"access_token": access_token, "token_type": "bearer"}
@@ -129,14 +130,5 @@ async def get_current_user(token: str = Depends(JWTBearer)) -> User:
     return user
 
 @user_router.get("/me")
-async def get_user(): #user: User = Depends(get_current_user)):
-    return "Hello"
-
-
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi import Request
-
-
-@user_router.get("/test")
-async def test(user: TokenData = Depends(JWTBearer())):
+async def get_user(user: TokenData = Depends(JWTBearer())):
     return user

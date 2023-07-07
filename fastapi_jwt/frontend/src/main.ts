@@ -1,4 +1,6 @@
 
+const API_URI = "http://127.0.0.1:8000";
+
 // create new Todo type
 type Todo = {
     id: number;
@@ -8,13 +10,28 @@ type Todo = {
     owner_id: number;
 };
 
+type User = {
+    id: number;
+    username: string;
+    name: string;
+};
+
+const getToken = () => {
+    // get token from local storage
+    const token = localStorage.getItem("access_token");
+    if(!token) {
+        return;
+    }
+    return token;
+}
+
 // create function to fetch todos from backend and return as json
 const getTodos = async () => {
     // if token is not present, alert user that they are not logged in
     if(!check_token()) {
         return;
     }
-    const response = await fetch("http://localhost:8000/todo/", {
+    const response = await fetch(`${API_URI}/todo/`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -53,7 +70,7 @@ const renderTodos = async () => {
 
 // create function to delete todo by its id make the button work
 const deleteTodo = async (id: number) => {
-    const response = await fetch(`http://localhost:8000/todo/${id}`, {
+    const response = await fetch(`${API_URI}/todo/${id}`, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -85,7 +102,7 @@ const addTodo = async () => {
     form.todo_description.value = "";
 
     // send title and description to backend
-    const response = await fetch("http://localhost:8000/todo/", {
+    const response = await fetch(`${API_URI}/todo/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -146,7 +163,7 @@ const completeTodo = async (id: number) => {
 };
 
 const updateTodo = async (id: number, values: Todo | any) => {
-    const response = await fetch(`http://localhost:8000/todo/${id}`, {
+    const response = await fetch(`${API_URI}/todo/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -204,6 +221,8 @@ const logout = async () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("token_type");
 
+    location.reload();
+
     // delete logout button
     const logoutButton = document.getElementById("logout_button");
     if(!logoutButton) return;
@@ -214,6 +233,9 @@ const logout = async () => {
     const todosDiv = document.getElementById("todo_list");
     if(!todosDiv) return;
     todosDiv.innerHTML = "";
+
+    // refresh page
+    location.reload();
 }
 
 const create_logout_button = () => {
@@ -229,17 +251,43 @@ const create_logout_button = () => {
     document.body.appendChild(logoutButton);
 }
 
-window.onload = () => {
+// create get_me function to get user details from backend and returns User
+const get_me = async () => {
+    const response = await fetch(`${API_URI}/user/me`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+    });
+    const data = await response.json();
+    return data as User;
+}
+
+window.onload = async () => {
     console.log("loaded");
     renderTodos();
     // check if token exists
     const token = localStorage.getItem("access_token");
     if(!token) {
         console.log("no token");
-        create_login_form();
+        const user_logged_in = document.getElementById("user_logged_in") as HTMLDivElement;
+        user_logged_in.hidden=true;
     }
     else {
         console.log("token exists");
-        create_logout_button();
+        const user_not_logged_in = document.getElementById("user_not_logged_in") as HTMLDivElement;
+        if(!user_not_logged_in) return;
+        user_not_logged_in.hidden=true;
+
+        // get user details from backend with get_me(), it is type of User and display its name
+        const user = await get_me();
+        if(!user) return;
+
+        // get hello p from user_logged_in div and change its text
+        const user_logged_in = document.getElementById("user_logged_in") as HTMLDivElement;
+        if(!user_logged_in) return;
+        const hello_p = user_logged_in.querySelector("p") as HTMLParagraphElement;
+        hello_p.innerHTML = `Hello, ${user.name}`;
     }
 }

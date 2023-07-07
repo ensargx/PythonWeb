@@ -12,7 +12,7 @@ const register = () => __awaiter(void 0, void 0, void 0, function* () {
     const name = document.getElementById('name');
     const username = document.getElementById('username');
     const password = document.getElementById('password');
-    const response = yield fetch('http://127.0.0.1:8000/user/register', {
+    const response = yield fetch(`${API_URI}/user/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

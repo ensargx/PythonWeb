@@ -17,7 +17,7 @@ const check_loggen_in = () => {
 const login = () => __awaiter(void 0, void 0, void 0, function* () {
     const username = document.getElementById('username');
     const password = document.getElementById('password');
-    const response = yield fetch('http://localhost:8000/user/login', {
+    const response = yield fetch(`${API_URI}/user/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

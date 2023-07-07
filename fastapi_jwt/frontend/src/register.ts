@@ -5,7 +5,7 @@ const register = async () => {
     const username = document.getElementById('username') as HTMLInputElement;
     const password = document.getElementById('password') as HTMLInputElement;
 
-    const response = await fetch('http://127.0.0.1:8000/user/register', {
+    const response = await fetch(`${API_URI}/user/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
