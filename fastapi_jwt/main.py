@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, Body
-from user import user_router, oauth2_scheme
+from user import user_router
 from todo import todo_router
 
 app = FastAPI()
@@ -13,10 +13,10 @@ app.add_middleware(
 )
 
 # /user router
-app.include_router(user_router, prefix="/user")
+app.include_router(user_router, prefix="/user", tags=["user"])
 
 # /todo router, it is protected by oauth2_scheme, requires logged in user
-app.include_router(todo_router, prefix="/todo")
+app.include_router(todo_router, prefix="/todo", tags=["todo"])
 
 @app.get("/")
 async def root():
