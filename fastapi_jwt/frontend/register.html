@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="script/register.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    <div class="register">
+        <div class="title"><h1>Register</h1></div>
+        <div class="register_form">
+            <form id="register_form" onsubmit="register(); return false">
+                <input id="name" type="text" name="name" placeholder="Name">
+                <input id="username" type="text" name="username" placeholder="Username">
+                <input id="password" type="password" name="password" placeholder="Password">
+                <input id="submit" type="submit" value="Register" onsubmit="register(); return;">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

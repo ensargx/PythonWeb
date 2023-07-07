@@ -154,46 +154,6 @@ const check_token = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     return true;
 });
-const login = () => __awaiter(void 0, void 0, void 0, function* () {
-    // get username and password from input fields
-    const form = document.getElementById("login_form");
-    const username = form.username.value;
-    const password = form.password.value;
-    // clear input fields
-    form.username.value = "";
-    form.password.value = "";
-    // send username and password to backend
-    const response = yield fetch("http://localhost:8000/user/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-    });
-    const data = yield response.json();
-    // if response_status_code is 400, alert user that todo was not added
-    if (!response.ok) {
-        alert("Failed to login.\nDetail: " + data.detail);
-        console.log(data);
-        return;
-    }
-    // get token from response
-    const token = data;
-    // save token to local storage
-    localStorage.setItem("access_token", token.access_token);
-    localStorage.setItem("token_type", token.token_type);
-    // delete login form
-    const loginForm = document.getElementById("login_form");
-    loginForm.remove();
-    // fetch todos from backend
-    const todos = yield renderTodos();
-    // create logout button
-    const logoutButton = document.createElement("button");
-    logoutButton.id = "logout_button";
-    logoutButton.innerHTML = "Logout";
-    logoutButton.onclick = logout;
-    document.body.appendChild(logoutButton);
-});
 const create_login_form = () => {
     // if exists, delete logout button
     const logoutButton = document.getElementById("logout_button");
