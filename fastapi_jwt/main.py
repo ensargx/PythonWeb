@@ -16,7 +16,7 @@ app.add_middleware(
 app.include_router(user_router, prefix="/user")
 
 # /todo router, it is protected by oauth2_scheme, requires logged in user
-app.include_router(todo_router, prefix="/todo", dependencies=[Depends(oauth2_scheme)])
+app.include_router(todo_router, prefix="/todo")
 
 @app.get("/")
 async def root():
