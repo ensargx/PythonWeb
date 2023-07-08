@@ -1,9 +1,15 @@
-from fastapi import FastAPI, Depends, Body
-from user import user_router
+from fastapi import FastAPI, Request, Depends
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
+from user import user_router, JWTBearer, TokenData, UserLogin, UserIn
+from user import login as user_login
+from user import register as user_register
 from todo import todo_router
 
-app = FastAPI()
+app = FastAPI(docs_url = "/api/docs")
 
+# CORS middleware, allow all origins, methods and headers
 from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
@@ -13,11 +19,114 @@ app.add_middleware(
 )
 
 # /user router
-app.include_router(user_router, prefix="/user", tags=["user"])
+app.include_router(user_router, prefix="/api/user", tags=["user"])
 
 # /todo router, it is protected by oauth2_scheme, requires logged in user
-app.include_router(todo_router, prefix="/todo", tags=["todo"])
+app.include_router(todo_router, prefix="/api/todo", tags=["todo"])
 
-@app.get("/")
+@app.get("/api/")
 async def root():
     return {"message": "Hello World"}
+
+
+# app.mount("/static", StaticFiles(directory="static"), name="static")
+
+templates = Jinja2Templates(directory="templates")
+
+def is_logged_in(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        return False
+    
+    try:
+        token_data = JWTBearer().verify_jwt(token)
+    except:
+        return False
+    
+    # convert token_data to TokenData model
+    token_data = TokenData(**token_data)
+    return token_data
+
+
+@app.get("/")
+async def home(request: Request):
+
+    user = is_logged_in(request)
+    # render template from templates/index.html
+    return templates.TemplateResponse("index.html", {"request": request, "user": user})
+
+@app.get("/login")
+async def login(request: Request):
+
+    if is_logged_in(request):
+        return RedirectResponse(url="/", status_code=302)    
+
+    return templates.TemplateResponse("login.html", {"request": request})
+
+@app.post("/login")
+async def login(request: Request):
+    # get username and password from form data
+
+    if is_logged_in(request):
+        return RedirectResponse(url="/", status_code=302)
+
+    form = await request.form()
+    
+    username = form.get("username")
+    password = form.get("password")
+
+    if not username or not password:
+        return templates.TemplateResponse("login.html", {"request": request, "error": "Username or password is empty"})
+    
+    login_data = UserLogin(username=username, password=password)
+    response = await user_login(login_data)
+
+    if not 'access_token' in response:
+        return templates.TemplateResponse("login.html", {"request": request, "error": response['detail']})
+
+    headers = {"Set-Cookie": f"access_token={response['access_token']}; HttpOnly"}
+    response = RedirectResponse(url="/", status_code=302, headers=headers)
+    return response
+
+@app.get("/logout")
+async def logout(request: Request):
+    
+    headers = {"Set-Cookie": "access_token=; HttpOnly"}
+    response = RedirectResponse(url="/", status_code=302, headers=headers)
+    return response
+
+@app.get("/register")
+async def register(request: Request):
+
+    if is_logged_in(request):
+        return RedirectResponse(url="/", status_code=302)
+
+    return templates.TemplateResponse("register.html", {"request": request})
+
+@app.post("/register")
+async def register(request: Request):
+    # get username and password from form data
+
+    if is_logged_in(request):
+        return RedirectResponse(url="/", status_code=302)
+
+    form = await request.form()
+    
+    username = form.get("username")
+    name = form.get("name")
+    password = form.get("password")
+
+    if not username or not name or not password:
+        return templates.TemplateResponse("register.html", {"request": request, "error": "Username or name or password is empty"})
+    
+    user_data = UserIn(username=username, name=name, password=password)
+    try:
+        response = await user_register(user_data)
+    except Exception as e:
+        return templates.TemplateResponse("register.html", {"request": request, "error": str(e)})
+    
+    status = response.get("status")
+    if not status or status != "success":
+        return templates.TemplateResponse("register.html", {"request": request, "error": "Unknown error"})
+    
+    return RedirectResponse(url="/login", status_code=302)
