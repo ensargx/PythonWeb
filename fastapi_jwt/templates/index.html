@@ -6,20 +6,21 @@
     <title>Document</title>
 </head>
 <body>
+    {% if data %}
+        <p>{{ data.status }}</p>
+        <p>{{ data.message }}</p>
+        <script>
+            window.history.replaceState({}, document.title, "/");
+        </script>
+    {% endif %}
     HELLO WORLD
-    {% if not user %}
+    <br>
+    
+    
 
     <a href="/login">Login</a>
     <a href="/register">Register</a>
     
-    
 
-
-    {% else %}
-    <a href="/logout">Logout</a>
-    HEllO {{ user.username }} <br>
-    naber {{ user.name }}
-
-    {% endif %}
 </body>
 </html>

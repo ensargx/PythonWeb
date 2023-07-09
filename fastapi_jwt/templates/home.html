@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{{ url_for('static', path='/style/main.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script type="module" src="{{ url_for('static', path='/script/main.js') }}"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% if data %}
+        <p>{{ data.status }}</p>
+        <p>{{ data.message }}</p>
+        <script>
+            window.history.replaceState({}, document.title, "/");
+        </script>
+    {% endif %}
+    <a href="/logout">Logout</a><br>
+    HEllO {{ user.username }} <br>
+    naber {{ user.name }} <br>
+    id: {{ user.id }}
+    <br><br>
+    <form method="post" class="add-todo">
+        <input type="text" name="title" placeholder="Title">
+        <input type="text" name="description" placeholder="Description">
+        <button type="submit">Add</button>
+    </form>
+    <br><br>
+    {% for todo in todos %}
+        <div class="todo" id="todo-{{ todo.id }}">
+            <h1>{{ todo.title }}</h1>
+            <p>{{ todo.description }}</p>
+            {% if todo.completed %}
+                <input type="checkbox" onclick="complete_todo('{{todo.id}}'); return;" checked>Completed</input>
+            {% else %}
+                <input type="checkbox" onclick="complete_todo('{{ todo.id }}'); return;">Completed</input>
+            {% endif %}
+            <button class="delete" todo-id="{{ todo.id }}" onclick="delete_todo('{{todo.id}}'); return;">Delete</button>
+        </div>
+    {% endfor %}
+</body>
+</html>

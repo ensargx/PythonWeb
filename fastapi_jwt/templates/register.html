@@ -6,6 +6,10 @@
     <title>Register</title>
 </head>
 <body>
+    {% if data %}
+        <p>{{ data.status }}</p>
+        <p>{{ data.message }}</p>
+    {% endif %}
     <form method="post">
         <input type="text" name="name" placeholder="Name">
         <input type="text" name="username" placeholder="Username">
