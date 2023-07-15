@@ -46,9 +46,6 @@ async def get_todos(user: TokenData = Depends(JWTBearer())):
 
 @todo_router.post("/", response_model=Todo)
 async def create_todo(todo: TodoIn, user: TokenData = Depends(JWTBearer())) -> Todo:
-
-    print(user)
-
     # title or description cannot be empty
     if not todo.title or not todo.description:
         raise HTTPException(status_code=400, detail=f"Title or description cannot be empty, {todo}")

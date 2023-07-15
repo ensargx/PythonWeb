@@ -5,7 +5,8 @@ from fastapi.responses import RedirectResponse
 from user import user_router, JWTBearer, TokenData, UserLogin, UserIn
 from user import login as user_login
 from user import register as user_register
-from todo import todo_router, get_todos
+from todo import todo_router, get_todos, create_todo, update_todo_by_id, TodoIn
+import json
 
 app = FastAPI(docs_url = "/api/docs")
 
@@ -33,7 +34,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
 
-def is_logged_in(request: Request):
+def is_logged_in(request: Request) -> TokenData if True else False:
     token = request.cookies.get("access_token")
     if not token:
         return False
@@ -74,17 +75,6 @@ async def home(request: Request):
     
     todos = await get_todos(user.dict())
     return templates.TemplateResponse("home.html", {"request": request, "user": user, "data": data, "todos": todos})
-
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    print("websocket accepted")
-    try:
-        while True:
-            data = await websocket.receive_text()
-            await websocket.send_text(f"Message text was: {data}")
-    except:
-        print("websocket closed")
 
 @app.get("/login")
 async def login(request: Request):
