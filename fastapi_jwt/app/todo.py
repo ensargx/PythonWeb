@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from db import database, todos
+from .db import database, todos
 from fastapi import Depends
-from user import JWTBearer, TokenData
+from .user import JWTBearer, TokenData
 
 todo_router = APIRouter()
 

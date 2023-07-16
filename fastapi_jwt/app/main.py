@@ -2,10 +2,10 @@ from fastapi import FastAPI, Request, WebSocket
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
-from user import user_router, JWTBearer, TokenData, UserLogin, UserIn
-from user import login as user_login
-from user import register as user_register
-from todo import todo_router, get_todos, create_todo, update_todo_by_id, TodoIn
+from .user import user_router, JWTBearer, TokenData, UserLogin, UserIn
+from .user import login as user_login
+from .user import register as user_register
+from .todo import todo_router, get_todos, create_todo, update_todo_by_id, TodoIn
 import json
 
 app = FastAPI(docs_url = "/api/docs")
@@ -30,9 +30,9 @@ async def root():
     return {"message": "Hello World"}
 
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="app/templates")
 
 def is_logged_in(request: Request) -> TokenData if True else False:
     token = request.cookies.get("access_token")

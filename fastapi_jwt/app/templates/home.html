@@ -29,13 +29,13 @@
     {% for todo in todos %}
         <div class="todo" id="todo-{{ todo.id }}">
             <h1>{{ todo.title }}</h1>
-            <p>{{ todo.description }}</p>
+            <p name="desc">{{ todo.description }}</p>
             {% if todo.completed %}
-                <input type="checkbox" onclick="complete_todo('{{todo.id}}'); return;" checked>Completed</input>
+                <input name="completed" type="checkbox" onclick="update_todo('{{todo.id}}'); return;" checked>Completed</input>
             {% else %}
-                <input type="checkbox" onclick="complete_todo('{{ todo.id }}'); return;">Completed</input>
+                <input name="completed" type="checkbox" onclick="update_todo('{{ todo.id }}'); return;">Completed</input>
             {% endif %}
-            <button class="delete" todo-id="{{ todo.id }}" onclick="delete_todo('{{todo.id}}'); return;">Delete</button>
+            <button name="delete" class="delete" todo-id="{{ todo.id }}" onclick="delete_todo('{{todo.id}}'); return;">Delete</button>
         </div>
     {% endfor %}
 </body>
