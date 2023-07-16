@@ -1,7 +1,10 @@
 # FastAPI Todo App
 
+## Configure
 
-# Build Docker
+Change the `ENV JWT_SECRET_KEY=SECRET` in the Dockerfile to a secret key of your choice.
+
+## Build Docker
 
 ```bash
 docker build -t fastapi_todo .
