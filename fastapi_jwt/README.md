@@ -2,7 +2,7 @@
 
 ## Docs
 
-[FastAPI](./screen.PNG)
+![FastAPI](./screen.PNG?raw=true)
 
 ## Configure
 
