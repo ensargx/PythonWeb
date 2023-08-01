@@ -2,13 +2,7 @@ on:
   push:
     branches:
       - main
-      
-# Job: connect to ubuntu VPS and run commands
-# 1. Connect to VPS
-# 2. workdir is /var/www/ensargok.net/app/
-# 3. open python venv at /var/www/ensargok.net/venv/
-# 4. install requirements.txt
-# 5. run python main.py
+
 jobs:
   build:
     runs-on: ubuntu-latest
