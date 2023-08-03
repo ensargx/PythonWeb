@@ -5,18 +5,16 @@ on:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
     steps:
-      - name: Connect to VPS
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          script: |
-            cd /var/www/ensargok.net/app/
-            echo "ENV_VAR_1=${{ secrets.TEST }}" >> .env
-            echo "ENV_VAR_2=${{ env.TEST }}" >> .env
-            ./deploy.sh
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: print HEllow world
+        run: echo "Hello World"
 
+      - name: TEST TO FILE
+        run: echo "Hello World2" > test.txt
+
+  
