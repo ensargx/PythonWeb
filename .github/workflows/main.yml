@@ -6,7 +6,9 @@ on:
 jobs:
   build:
 
-    runs-on: my-vps-1
+    runs-on: 
+      - self-hosted
+      - my-vps-1
 
     steps:
       - name: Checkout code
