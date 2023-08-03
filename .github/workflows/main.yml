@@ -16,6 +16,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /var/www/ensargok.net/app/
-            source /var/www/ensargok.net/venv/bin/activate
-            pip install -r requirements.txt
-            python main.py
+            echo "ENV_VAR_1=${{ secrets.TEST }}" >> .env
+            echo "ENV_VAR_2=${{ env.TEST }}" >> .env
+            deploy.sh
+
