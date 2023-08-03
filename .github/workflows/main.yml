@@ -6,7 +6,8 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: my-vps-1
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -16,5 +17,4 @@ jobs:
 
       - name: TEST TO FILE
         run: echo "Hello World2" > test.txt
-
-  
+          
