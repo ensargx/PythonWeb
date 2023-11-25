@@ -13,8 +13,7 @@ jobs:
       
       - name: Configure environment
       - run: |
-          echo CONFIG_ID=$CONFIG_ID >> .env
-          echo CONFIG_SECRET=$CONFIG_SECRET >> .env
+          echo AUTH_TOKEN=${{ secrets.AUTH_TOKEN }} >> .env
 
       - name: Run the script
         run: |
