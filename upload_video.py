@@ -56,6 +56,6 @@ for video in videos:
     title = video['title']
     url = video['url']
     download_video(title, url)
-    video_len = os.path.getsize(f'{title}.mp4')
+    video_len = str(os.path.getsize(f'{title}.mp4'))
     location = create_resumable_upload(auth_token, video_len, title)
     upload_video(location, title, auth_token, video_len)
