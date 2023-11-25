@@ -4,16 +4,14 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
-    steps:
+    steps:      
       - name: Checkout code
         uses: actions/checkout@v2
       
       - name: Configure environment
-      - run: |
-          echo AUTH_TOKEN=${{ secrets.AUTH_TOKEN }} >> .env
+        run: echo AUTH_TOKEN=${{ secrets.AUTH_TOKEN }} >> .env
 
       - name: Run the script
         run: |
