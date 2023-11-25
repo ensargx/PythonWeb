@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import requests
 
 # Load environment variables
-dotenv.load_dotenv()
+load_dotenv()
 
 def load_videos(path):
     # Load videos from a path
