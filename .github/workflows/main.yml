@@ -6,15 +6,18 @@ on:
 jobs:
   build:
 
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       
-      - name: print HEllow world
-        run: echo "Hello World"
+      - name: Configure environment
+      - run: |
+          echo CONFIG_ID=$CONFIG_ID >> .env
+          echo CONFIG_SECRET=$CONFIG_SECRET >> .env
 
-      - name: TEST TO FILE
-        run: echo "Hello World2" > test.txt
-          
+      - name: Run the script
+        run: |
+          chmod +x ./script.sh
+          ./script.sh
