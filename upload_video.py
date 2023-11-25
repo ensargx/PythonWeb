@@ -52,7 +52,6 @@ def upload_video(location, title, auth_token, video_len):
 auth_token = os.getenv('AUTH_TOKEN')
 videos = load_videos('videos.json')
 
-
 for video in videos:
     title = video['title']
     url = video['url']

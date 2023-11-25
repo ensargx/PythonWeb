@@ -4,4 +4,4 @@
 
 pip3 install -r requirements.txt
 
-curl 'google.com'
+python3 upload_video.py
