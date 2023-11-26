@@ -38,12 +38,14 @@ def get_download_link(video_id):
     url = f"https://video.sibnet.ru{url}"
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 
-    r = requests.head(url, headers={'Referer': main_url, 'User-Agent': user_agent})
+    r = requests.head(url, headers={'Referer': main_url, 'User-Agent': user_agent}, allow_redirects=False)
+    print(f"Getting download link: {r.status_code}")
     url = r.headers.get('Location')[2:]
     url = f"https://{url}"
 
     r = requests.get(url, headers={'User-Agent': user_agent}, allow_redirects=False)
     url = r.headers.get('Location')
+    print(f"Getting download link: {r.status_code}")
     return url
 
 def create_resumable_upload(auth_token, video_len, title):
