@@ -45,17 +45,22 @@ def create_resumable_upload(auth_token, video_len, title):
     })
 
     print(r.status_code)
-    print(r.headers)
+    if not r.status_code == 200:
+        print("Failed to create resumable upload!")
+        print(r.content)
+    # print(r.headers)
     return r.headers['Location']
 
 def upload_video(location, title, auth_token, video_len):
+    print(f"Uploading video: {title}")
     video_bin = open(f'{title}.mp4', 'rb').read()
+    print(f"Video length: {video_len}")
     r = requests.put(location, data=video_bin, headers={
         'Authorization': f'Bearer {auth_token}',
         'Content-Type': 'video/mp4',
         'Content-Length': video_len
     })
-
+    print(r.status_code)
 
 auth_token = os.getenv('AUTH_TOKEN')
 assert auth_token != None
