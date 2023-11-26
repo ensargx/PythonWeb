@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from dotenv import load_dotenv
 import requests
 
@@ -27,6 +28,23 @@ def check_if_auth_code_valid(auth_code):
         print("Auth code is not valid!")
         print(r.content)
     assert r.status_code == 200
+
+def get_download_link(video_id):
+    main_url = f'https://video.sibnet.ru/shell.php?videoid={video_id}'
+    r = requests.get(main_url)
+    assert r.status_code == 200
+
+    url = re.search(b"src: \"(.*)\", type: \"video/mp4\"", r.content).group(1).decode()
+    url = f"https://video.sibnet.ru{url}"
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+
+    r = requests.head(url, headers={'Referer': main_url, 'User-Agent': user_agent})
+    url = r.headers.get('Location')[2:]
+    url = f"https://{url}"
+
+    r = requests.get(url, headers={'User-Agent': user_agent}, allow_redirects=False)
+    url = r.headers.get('Location')
+    return url
 
 def create_resumable_upload(auth_token, video_len, title):
     r = requests.post("https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status,contentDetails", headers={
@@ -68,7 +86,8 @@ videos = load_videos('videos.json')
 
 for video in videos:
     title = video['title']
-    url = video['url']
+    video_id = int(video['id'])
+    url = get_download_link(video_id)
     download_video(title, url)
     video_len = str(os.path.getsize(f'{title}.mp4'))
     location = create_resumable_upload(auth_token, video_len, title)
