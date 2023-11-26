@@ -20,6 +20,12 @@ def download_video(title, url):
     # Return a video object
     os.system(f"curl '{url}' -o '{title}.mp4'")
 
+def check_if_auth_code_valid(auth_code):
+    r = requests.get(f'https://youtube.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=Ks-_Mh1QhMc&key={auth_code}')
+    print(f"Checking if auth code is valid: {r.status_code}")
+    print(r.content)
+    assert r.status_code == 200
+
 def create_resumable_upload(auth_token, video_len, title):
     r = requests.post("https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status,contentDetails", headers={
         'Authorization': f'Bearer {auth_token}',
@@ -50,6 +56,8 @@ def upload_video(location, title, auth_token, video_len):
 
 
 auth_token = os.getenv('AUTH_TOKEN')
+assert auth_token != None
+check_if_auth_code_valid(auth_token)
 videos = load_videos('videos.json')
 
 for video in videos:
