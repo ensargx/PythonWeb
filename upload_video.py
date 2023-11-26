@@ -43,8 +43,7 @@ def create_resumable_upload(auth_token, video_len, title):
             'privacyStatus': 'private'
         }
     })
-
-    print(r.status_code)
+    print(f"Creating resumable upload: {r.status_code}")
     if not r.status_code == 200:
         print("Failed to create resumable upload!")
         print(r.content)
