@@ -27,8 +27,7 @@ def check_if_auth_code_valid(auth_code):
     assert r.status_code == 200
 
 def create_resumable_upload(auth_token, video_len, title):
-    r = requests.post("https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status,contentDetails", headers={
-        'Authorization': f'Bearer {auth_token}',
+    r = requests.post(f"https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status,contentDetails&key={auth_token}", headers={
         'Content-Type': 'application/json; charset=UTF-8',
         'X-Upload-Content-Length': video_len,
         'X-Upload-Content-Type': 'video/mp4'
