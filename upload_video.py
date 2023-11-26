@@ -3,9 +3,30 @@ import os
 import re
 from dotenv import load_dotenv
 import requests
+import time
 
 # Load environment variables
 load_dotenv()
+
+
+def get_access_token():
+    # Get access token from a refresh token
+    # Return a tuple of (access_token, expires_in)
+    refresh_token = os.getenv('REFRESH_TOKEN')
+    client_id = os.getenv('CLIENT_ID')
+    client_secret = os.getenv('CLIENT_SECRET')
+    r = requests.post('https://oauth2.googleapis.com/token', data={
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'refresh_token': refresh_token,
+        'grant_type': 'refresh_token'
+    })
+    print(f"Getting access token: {r.status_code}")
+    if not r.status_code == 200:
+        print("Failed to get access token!")
+        print(r.content)
+    # print(r.json())
+    return r.json()['access_token'], r.json()['expires_in']
 
 def load_videos(path):
     # Load videos from a path
@@ -89,7 +110,12 @@ assert auth_token != None
 # check_if_auth_code_valid(auth_token)
 videos = load_videos('videos.json')
 
+time_now = time.time()
+auth_token, expires_in = get_access_token()
+
 for video in videos:
+    if time.time() - time_now > expires_in:
+        auth_token, expires_in = get_access_token()
     title = video['title']
     video_id = int(video['id'])
     url = get_download_link(video_id)
