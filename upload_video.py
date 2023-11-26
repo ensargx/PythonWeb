@@ -23,11 +23,14 @@ def download_video(title, url):
 def check_if_auth_code_valid(auth_code):
     r = requests.get(f'https://youtube.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=Ks-_Mh1QhMc&key={auth_code}')
     print(f"Checking if auth code is valid: {r.status_code}")
-    print(r.content)
+    if not r.status_code == 200:
+        print("Auth code is not valid!")
+        print(r.content)
     assert r.status_code == 200
 
 def create_resumable_upload(auth_token, video_len, title):
-    r = requests.post(f"https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status,contentDetails&key={auth_token}", headers={
+    r = requests.post("https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status,contentDetails", headers={
+        'Authorization': f'Bearer {auth_token}',
         'Content-Type': 'application/json; charset=UTF-8',
         'X-Upload-Content-Length': video_len,
         'X-Upload-Content-Type': 'video/mp4'
@@ -48,7 +51,7 @@ def create_resumable_upload(auth_token, video_len, title):
 def upload_video(location, title, auth_token, video_len):
     video_bin = open(f'{title}.mp4', 'rb').read()
     r = requests.put(location, data=video_bin, headers={
-        'Authorization:': f'Bearer {auth_token}',
+        'Authorization': f'Bearer {auth_token}',
         'Content-Type': 'video/mp4',
         'Content-Length': video_len
     })
@@ -56,7 +59,7 @@ def upload_video(location, title, auth_token, video_len):
 
 auth_token = os.getenv('AUTH_TOKEN')
 assert auth_token != None
-check_if_auth_code_valid(auth_token)
+# check_if_auth_code_valid(auth_token)
 videos = load_videos('videos.json')
 
 for video in videos:
