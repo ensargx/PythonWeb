@@ -39,7 +39,9 @@ def get_download_link(video_id):
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 
     r = requests.head(url, headers={'Referer': main_url, 'User-Agent': user_agent}, allow_redirects=False)
-    print(f"Getting download link: {r.status_code}")
+    if not r.status_code == 302:
+        print("Failed to get download link!")
+        print(r.content)
     url = r.headers.get('Location')[2:]
     url = f"https://{url}"
 
