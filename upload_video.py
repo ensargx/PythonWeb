@@ -114,12 +114,12 @@ time_now = time.time()
 auth_token, expires_in = get_access_token()
 
 for video in videos:
-    if time.time() - time_now > expires_in:
-        auth_token, expires_in = get_access_token()
     title = video['title']
     video_id = int(video['id'])
     url = get_download_link(video_id)
     download_video(title, url)
     video_len = str(os.path.getsize(f'{title}.mp4'))
+    if time.time() - time_now > expires_in:
+        auth_token, expires_in = get_access_token()
     location = create_resumable_upload(auth_token, video_len, title)
     upload_video(location, title, auth_token, video_len)
